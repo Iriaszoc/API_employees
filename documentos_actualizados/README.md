@@ -1,6 +1,6 @@
 # Documentos actualizados
 
-Esta carpeta contiene solo la documentacion alineada al avance actual del repositorio de Roxana.
+Esta carpeta contiene la documentacion alineada al avance actual del repositorio.
 
 ## Alcance de esta carpeta
 - Backend en Go.
