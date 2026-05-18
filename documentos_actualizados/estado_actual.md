@@ -1,7 +1,7 @@
 # Estado actual del avance
 
 ## Base tecnica ya existente
-El repositorio clonado ya trae:
+El repositorio ya trae:
 - API en Go.
 - Dockerfile.
 - docker-compose.yml.
@@ -37,4 +37,4 @@ El backend actual trabaja sobre la tabla `employees` con campos:
 - GitHub Actions o alguna automatizacion de verificacion.
 
 ## Observacion importante
-Este avance no usa un modelo nuevo de empleados; usa la base `employees` ya cargada. Por eso toda nueva documentacion en esta carpeta debe hablar el mismo lenguaje que el backend actual.
+Este avance no usa un modelo nuevo de empleados; usa la base `employees` ya cargada.
