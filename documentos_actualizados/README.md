@@ -16,4 +16,4 @@ Esta carpeta contiene la documentacion alineada al avance actual del repositorio
 - checklist_revision.md
 
 ## Nota
-Estos documentos reflejan el estado real del avance clonado. Si el equipo cambia el esquema o el contrato, esta carpeta debe actualizarse y la version anterior debe quedar solo como referencia historica.
+Estos documentos reflejan el estado real del avance del proycto. 
