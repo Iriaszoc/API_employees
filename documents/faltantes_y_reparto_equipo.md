@@ -325,14 +325,61 @@ Con Docker corriendo (`docker-compose up --build`) y `api_client.py` de Pablo di
 
 ---
 
-## Eli — Despliegue, pruebas y apoyo con GitHub Actions
+## Martha Elizabeth Castorena Rivera — Despliegue, pruebas y apoyo con GitHub Actions
 
 **Carga: Media** | **Plazo sugerido: 3–4 dias**
 
 ### Objetivo
-Apoyar el despliegue reproducible, investigar y dejar operativo GitHub Actions, revisar el flujo de pruebas y documentar solo lo minimo indispensable para ejecutar y verificar el sistema. La documentacion extensa no es la prioridad principal de esta parte.
+Apoyar el despliegue reproducible, investigar y dejar operativo GitHub Actions, revisar el flujo de pruebas y dejar evidencia clara de que el sistema levanta, responde y se puede verificar desde cero. No se trata de escribir documentacion larga, sino de hacer que el cierre tecnico sea reproducible y comprobable.
 
 ### Pasos detallados
+
+#### Paso 1 — Validar el despliegue limpio
+Probar que el proyecto levanta desde cero con Docker Compose sin depender de residuos de ejecuciones anteriores.
+
+Checklist de esta verificacion:
+- Arranque de MySQL sin errores.
+- Arranque de la API solo cuando la BD ya este lista.
+- Respuesta de `GET /empleados` desde `http://localhost:8080`.
+- Apagado limpio con `docker-compose down`.
+
+#### Paso 2 — Preparar el flujo de CI
+Tomar el `docker-compose.test.yml` como base para automatizar pruebas en GitHub Actions.
+
+Lo minimo que debe quedar listo:
+- El workflow corre con `push` y `pull_request`.
+- Levanta los servicios con el compose de prueba.
+- Ejecuta el script bash de pruebas.
+- Publica el resumen y los logs como evidencia.
+
+#### Paso 3 — Revisar la evidencia de ejecucion
+Guardar o revisar capturas, logs y resultados para demostrar que el proyecto no solo compila, sino que realmente funciona.
+
+Evidencia esperada:
+- salida del arranque en terminal,
+- salida de `tests/test_api.sh`,
+- log del workflow en GitHub Actions,
+- artefacto descargable con resultados.
+
+#### Paso 4 — Dar apoyo puntual a la integracion
+Si al final hay diferencias entre lo que documenta la API y lo que responde en realidad, Eli apoya a detectar esas diferencias y las pasa al integrante que mantenga el contrato o la documentacion final.
+
+#### Paso 5 — Cerrar pendientes de despliegue
+Revisar que no queden detalles sueltos del entorno:
+- rutas correctas en el workflow,
+- nombres correctos de archivos en el repo,
+- permisos de ejecucion para scripts bash,
+- consistencia entre `docker-compose.yml` y `docker-compose.test.yml`.
+
+### Entregables concretos
+- `docker-compose.test.yml` validado.
+- Workflow de GitHub Actions operativo.
+- Logs de ejecucion guardados.
+- Evidencia de pruebas y despliegue.
+- Observaciones tecnicas de cualquier falla detectada en el flujo.
+
+### Criterio de cierre
+Eli termina su parte cuando el equipo puede levantar el entorno de forma repetible, ejecutar pruebas automatizadas y mostrar evidencia clara de que el sistema pasa por el flujo esperado sin depender de explicaciones verbales.
 
 ## Pablo Alberto Reyes Gutierrez — Capa HTTP del cliente + Pruebas bash + CI
 
