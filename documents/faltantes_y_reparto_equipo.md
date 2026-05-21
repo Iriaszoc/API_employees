@@ -41,6 +41,12 @@
 
 ## Reparto detallado por integrante
 
+## Prioridad acordada para el cierre
+
+1. Primero una interfaz sencilla que permita probar el avance real del backend sin esperar el producto final.
+2. Después despliegue, GitHub Actions y verificación automatizada del flujo.
+3. Las pruebas bash ya existen y funcionaron, así que se toman como base verificada y no como pendiente principal.
+
 ---
 
 ## Roxana Irías Hernández — Backend Go + Docker, MySQL y despliegue
@@ -248,7 +254,7 @@ Crear `DEPLOY.md` en la raíz del repositorio con:
 **Carga: Media** | **Plazo sugerido: 3–4 dias**
 
 ### Objetivo
-Construir la capa visual del cliente de escritorio en Python: la ventana principal con la tabla de empleados, los formularios de alta y edicion, y el manejo visual de errores. La capa de comunicacion HTTP (`api_client.py`) la implementa Pablo, quien ya conoce todos los endpoints por su trabajo de pruebas.
+Construir la capa visual del cliente de escritorio en Python: una ventana sencilla pero funcional para listar, buscar, crear, editar y eliminar empleados sobre la API que ya existe.
 
 ### Requisitos previos
 - Python 3.10+ instalado.
@@ -263,9 +269,9 @@ Construir la capa visual del cliente de escritorio en Python: la ventana princip
 Dentro del repositorio del proyecto, crear la carpeta:
 ```
 reporox/API_employees/cliente_python/
-├── main.py          <- Punto de entrada (Frida)
-├── api_client.py    <- Capa HTTP (Pablo)
-└── ui.py            <- Ventana e interfaz grafica (Frida)
+├── main.py          <- Punto de entrada
+├── api_client.py    <- Capa HTTP reutilizable
+└── ui.py            <- Ventana e interfaz grafica sencilla
 ```
 
 #### Paso 2 — Implementar `ui.py` con Tkinter
@@ -319,83 +325,21 @@ Con Docker corriendo (`docker-compose up --build`) y `api_client.py` de Pablo di
 
 ---
 
-## Martha Elizabeth Castorena Rivera — Documentacion formal del proyecto
+## Eli — Despliegue, pruebas y apoyo con GitHub Actions
 
 **Carga: Media** | **Plazo sugerido: 3–4 dias**
 
 ### Objetivo
-Redactar la documentacion tecnica formal del proyecto: contrato de API, registro de cambios y README actualizado. Esta documentacion es la evidencia escrita del trabajo del equipo y la referencia que el profesor revisara.
+Apoyar el despliegue reproducible, investigar y dejar operativo GitHub Actions, revisar el flujo de pruebas y documentar solo lo minimo indispensable para ejecutar y verificar el sistema. La documentacion extensa no es la prioridad principal de esta parte.
 
 ### Pasos detallados
-
-#### Paso 1 — Redactar el contrato API (`API_CONTRACT.md`)
-Crear `API_CONTRACT.md` en la raiz del repositorio con la documentacion formal de cada endpoint. Para cada uno incluir metodo, ruta, cuerpo del request, codigos de respuesta y cuerpo de la respuesta con ejemplo JSON.
-
-Documentar los 5 endpoints:
-- GET /empleados
-- GET /empleados/{id}
-- POST /empleados
-- PUT /empleados/{id}
-- DELETE /empleados/{id}
-
-Ejemplo de plantilla para cada endpoint:
-```markdown
-### GET /empleados/{id}
-Descripcion: Obtiene un empleado por su numero de empleado.
-
-Parametros de ruta:
-- id (integer) - Numero de empleado (emp_no)
-
-Respuestas:
-| Codigo | Descripcion | Cuerpo |
-|---|---|---|
-| 200 | Empleado encontrado | {"emp_no":10001,"first_name":"...","last_name":"...","gender":"M","birth_date":"...","hire_date":"..."} |
-| 404 | No encontrado | {"error":"empleado no encontrado"} |
-```
-
-#### Paso 2 — Crear `CHANGELOG.md`
-Crear `CHANGELOG.md` en la raiz del repositorio:
-```markdown
-## [1.1.0] - 2026-05-XX
-### Anadido
-- Variables de entorno para la conexion a MySQL
-- Healthcheck en docker-compose para el servicio db
-- Cliente de escritorio en Python (carpeta cliente_python/)
-- Validacion de campos en POST /empleados
-- Script bash automatizado de pruebas (tests/test_api.sh)
-- Workflow de GitHub Actions con notificacion de resultados
-- Contrato de API documentado en API_CONTRACT.md
-- DEPLOY.md con guia de arranque
-
-### Corregido
-- Respuesta de updateEmpleado ahora es JSON
-- Respuesta 404 de getEmpleado ahora incluye cuerpo JSON
-- Version de imagen Go en Dockerfile (1.22-alpine)
-- .gitignore actualizado para incluir .env
-```
-
-#### Paso 3 — Actualizar el `README.md` principal
-El `README.md` actual tiene el bloque de codigo incompleto (faltan las comillas de cierre). Corregir y agregar:
-- Seccion **Requisitos previos**: Docker Desktop instalado.
-- Seccion **Estructura del proyecto**: lista de archivos y carpetas.
-- Seccion **Ejemplos de uso** con los curl de los 5 endpoints.
-- Seccion **Pruebas**: instruccion para correr `bash tests/test_api.sh`.
-- Enlace a `API_CONTRACT.md`.
-- Enlace a `DEPLOY.md`.
-
-#### Paso 4 — Verificar consistencia antes de entregar
-- Los ejemplos JSON del `API_CONTRACT.md` deben coincidir con los campos reales del modelo (`emp_no`, `birth_date`, `first_name`, `last_name`, `gender`, `hire_date`).
-- Los codigos HTTP documentados deben coincidir con los que devuelve el backend corregido por Roxana.
-- El README no debe tener bloques de codigo sin cerrar.
-
----
 
 ## Pablo Alberto Reyes Gutierrez — Capa HTTP del cliente + Pruebas bash + CI
 
 **Carga: Media** | **Plazo sugerido: 3–4 dias**
 
 ### Objetivo
-Implementar la capa de comunicacion HTTP del cliente Python (`api_client.py`), crear el script bash automatizado de pruebas del CRUD y configurar el workflow de GitHub Actions para ejecutar esas pruebas en cada push/PR y notificar el resultado al equipo.
+Implementar la capa de comunicacion HTTP del cliente Python (`api_client.py`) y dejar el flujo de pruebas conectado con el cliente. Las pruebas bash ya fueron hechas y funcionan, por lo que ahora se toman como soporte ya verificado.
 
 ### Pasos detallados
 
@@ -435,125 +379,27 @@ def eliminar_empleado(emp_no):
 ```
 Una vez listo, compartirlo con Frida para que lo integre en la UI.
 
-#### Paso 2 — Preparar el entorno de pruebas
-1. Clonar o actualizar el repositorio local.
-2. Ejecutar `docker-compose up --build` y esperar a que el sistema este listo.
-3. Verificar que `curl` esta disponible (`curl --version`).
+#### Paso 2 — Asegurar la capa HTTP del cliente
+Conectar el archivo `api_client.py` con la interfaz que se vaya a montar y dejar documentadas las funciones que ya consumen la API.
 
-#### Paso 2 — Crear el script bash de pruebas automatizado
-
-Crear el archivo `tests/test_api.sh` en la raíz del repositorio. Este script ejecuta todos los casos de prueba del CRUD, verifica los códigos HTTP obtenidos y reporta PASS/FAIL por caso:
-
-```bash
-#!/usr/bin/env bash
-# tests/test_api.sh — Suite de pruebas de la API de empleados
-set -euo pipefail
-
-BASE_URL="${API_URL:-http://localhost:8080}"
-PASS=0
-FAIL=0
-
-# Colores para la terminal
-GREEN="\033[0;32m"
-RED="\033[0;31m"
-NC="\033[0m"
-
-check() {
-  local desc="$1"
-  local expected="$2"
-  local actual="$3"
-  if [ "$actual" -eq "$expected" ]; then
-    echo -e "${GREEN}[PASS]${NC} $desc (HTTP $actual)"
-    PASS=$((PASS + 1))
-  else
-    echo -e "${RED}[FAIL]${NC} $desc — esperado HTTP $expected, obtenido HTTP $actual"
-    FAIL=$((FAIL + 1))
-  fi
-}
-
-echo "================================================"
-echo " Suite de pruebas — API Empleados"
-echo " URL base: $BASE_URL"
-echo "================================================"
-
-# Caso 1 — Listar empleados (GET /empleados → 200)
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/empleados")
-check "GET /empleados lista empleados" 200 "$HTTP"
-
-# Caso 2 — Obtener empleado existente (GET /empleados/10001 → 200)
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/empleados/10001")
-check "GET /empleados/10001 empleado existente" 200 "$HTTP"
-
-# Caso 3 — Obtener empleado inexistente (GET /empleados/999999 → 404)
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/empleados/999999")
-check "GET /empleados/999999 empleado inexistente" 404 "$HTTP"
-
-# Caso 4 — Crear empleado válido (POST /empleados → 201)
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/empleados" \
-  -H "Content-Type: application/json" \
-  -d '{"emp_no":999001,"birth_date":"1990-01-15","first_name":"Test","last_name":"Usuario","gender":"M","hire_date":"2024-01-01"}')
-check "POST /empleados crea empleado válido" 201 "$HTTP"
-
-# Caso 5 — Crear empleado con datos incompletos (POST → 400)
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/empleados" \
-  -H "Content-Type: application/json" \
-  -d '{"emp_no":999002,"first_name":"Incompleto"}')
-check "POST /empleados rechaza datos incompletos" 400 "$HTTP"
-
-# Caso 6 — Actualizar empleado existente (PUT /empleados/999001 → 200)
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X PUT "$BASE_URL/empleados/999001" \
-  -H "Content-Type: application/json" \
-  -d '{"first_name":"TestActualizado","last_name":"Apellido","gender":"F"}')
-check "PUT /empleados/999001 actualiza empleado" 200 "$HTTP"
-
-# Caso 7 — Eliminar empleado (DELETE /empleados/999001 → 204)
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$BASE_URL/empleados/999001")
-check "DELETE /empleados/999001 elimina empleado" 204 "$HTTP"
-
-# Caso 8 — Verificar que fue eliminado (GET /empleados/999001 → 404)
-HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/empleados/999001")
-check "GET /empleados/999001 confirma eliminación" 404 "$HTTP"
-
-echo "================================================"
-echo " Resultado: $PASS PASS | $FAIL FAIL"
-echo "================================================"
-
-# Salir con error si hubo fallos (para que GitHub Actions lo detecte)
-[ "$FAIL" -eq 0 ] || exit 1
-```
-
-Darle permisos de ejecución:
-```bash
-chmod +x tests/test_api.sh
-```
-
-Ejecutarlo localmente (con Docker corriendo):
-```bash
-bash tests/test_api.sh
-```
-
-#### Paso 3 — Pruebas de integración entre cliente y API
-Una vez que Frida tenga el cliente listo:
-1. Abrir la app de escritorio Python.
-2. Realizar los mismos casos de prueba (1 al 8) desde la interfaz gráfica.
-3. Verificar que los errores se muestran correctamente en la UI.
-4. Documentar cualquier discrepancia entre el comportamiento de la API y el cliente.
+#### Paso 3 — Usar las pruebas bash como base verificada
+Las pruebas bash ya existen y funcionaron, así que Pablo debe conservarlas como evidencia y adaptarlas solo si la API cambia.
 
 #### Paso 4 — Pruebas de integracion entre cliente y API
 Una vez que Frida tenga el cliente listo:
 1. Abrir la app de escritorio Python.
 2. Realizar los mismos casos de prueba (1 al 8) desde la interfaz grafica.
 3. Verificar que los errores se muestran correctamente en la UI.
-4. Documentar cualquier discrepancia entre el comportamiento de la API y el cliente y comunicarsela a Martha para actualizar el API_CONTRACT.md.
+4. Documentar cualquier discrepancia entre el comportamiento de la API y el cliente y comunicarsela a quien lleve la documentación mínima del cierre.
 
 ---
 
 ## GitHub Actions — CI con pruebas bash y notificación de resultados
 
-> **Responsable:** Pablo (crea el workflow) + Martha (valida que docker-compose.test.yml arranque en CI)
+> **Responsable:** Pablo (crea el workflow) + Eli (valida que docker-compose.test.yml arranque en CI)
 
 ### Objetivo
-Ejecutar automáticamente el script `tests/test_api.sh` en cada push/PR, mostrar el resultado de cada caso (PASS/FAIL) en el log de GitHub Actions y enviar una notificación con el resumen.
+Ejecutar automáticamente el script `tests/test_api.sh` en cada push/PR, mostrar el resultado de cada caso (PASS/FAIL) en el log de GitHub Actions y dejar evidencia descargable del resumen.
 
 ### Paso 1 — Crear `docker-compose.test.yml`
 Este compose es idéntico al de producción pero **sin volúmenes persistentes** (para que cada ejecución de CI arranque desde cero):
@@ -687,9 +533,9 @@ jobs:
 Para que el equipo reciba notificaciones al completarse el workflow:
 
 1. Ir al repositorio en GitHub > **Settings** > **Notifications**.
-2. Verificar que cada integrante tenga activadas las notificaciones de **Actions** en su perfil: GitHub > Profile > Settings > Notifications > GitHub Actions > activar **"Failed workflows only"** o **"All"**.
-3. El resumen de PASS/FAIL aparecerá automáticamente en la pestaña **"Summary"** de cada ejecución del workflow (Step 6 del workflow).
-4. Si el workflow falla, GitHub marcará el PR/commit como fallido y enviará email de notificación.
+2. Verificar que cada integrante tenga activadas las notificaciones de **Actions** en su perfil.
+3. El resumen de PASS/FAIL aparecerá automáticamente en la pestaña **Summary** de cada ejecución del workflow.
+4. Si el workflow falla, GitHub marcará el PR/commit como fallido y enviará la notificación correspondiente.
 
 ### Paso 4 — Verificar que el workflow funciona
 1. Hacer un commit con el workflow y el script en el mismo PR.
@@ -705,25 +551,25 @@ Para que el equipo reciba notificaciones al completarse el workflow:
 | Persona | Tarea principal | Archivos que entrega |
 |---|---|---|
 | Roxana Irias Hernandez | Backend Go + Docker/MySQL/Despliegue | `main.go`, `docker-compose.yml`, `docker-compose.test.yml`, `.env`, `.gitignore`, `DEPLOY.md` |
-| Martha Elizabeth Castorena Rivera | Documentacion formal | `API_CONTRACT.md`, `CHANGELOG.md`, `README.md` |
+| Eli | Despliegue + GitHub Actions + apoyo a pruebas | `docker-compose.test.yml`, `.github/workflows/tests.yml`, logs y evidencia de ejecución |
 | Frida Paulina Sepulveda Becerra | Interfaz grafica del cliente Python | `cliente_python/ui.py`, `main.py`, `requirements.txt` |
-| Pablo Alberto Reyes Gutierrez | Capa HTTP + Pruebas bash + CI/CD | `cliente_python/api_client.py`, `tests/test_api.sh`, `.github/workflows/tests.yml` |
+| Pablo Alberto Reyes Gutierrez | Capa HTTP + integración con interfaz | `cliente_python/api_client.py`, apoyo a pruebas de integración y evidencia |
 
 ---
 
 ## Prioridad de ejecucion
 
 1. **Roxana** termina primero el backend y Docker → los demas dependen de que la API arranque limpia y estable.
-2. **Pablo** implementa `api_client.py` en paralelo con Roxana → Frida necesita este archivo para conectar la UI.
-3. **Frida** construye la interfaz grafica → puede avanzar con la estructura de ventanas antes de recibir `api_client.py`.
-4. **Martha** redacta la documentacion en paralelo → puede avanzar con el codigo existente sin esperar al cliente.
-5. **Pablo** finaliza el script de pruebas y el workflow de CI una vez que Roxana tenga `docker-compose.test.yml` listo.
+2. **Frida** construye la interfaz grafica → puede avanzar con la estructura de ventanas mientras Pablo deja lista la capa HTTP.
+3. **Pablo** ajusta `api_client.py` y deja la integración de cliente lista para probar.
+4. **Eli** toma despliegue, GitHub Actions y evidencia para que el flujo quede reproducible.
+5. Las pruebas bash ya se consideran base verificada y sirven como evidencia, no como bloqueo pendiente.
 
 ## Distribucion de carga
 
 | Persona | Tarea | Carga | Plazo |
 |---|---|---|---|
 | Roxana Irias Hernandez | Backend + Docker/MySQL/Despliegue | Alta | 4-5 dias |
-| Martha Elizabeth Castorena Rivera | Documentacion formal | Media | 3-4 dias |
+| Eli | Despliegue + GitHub Actions + evidencia | Media | 3-4 dias |
 | Frida Paulina Sepulveda Becerra | Interfaz grafica Python | Media | 3-4 dias |
-| Pablo Alberto Reyes Gutierrez | api_client.py + Pruebas + CI | Media | 3-4 dias |
+| Pablo Alberto Reyes Gutierrez | api_client.py + integración con interfaz | Media | 3-4 dias |
