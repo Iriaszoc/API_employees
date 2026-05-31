@@ -1,10 +1,10 @@
-import tkinter as tk
+import customtkinter as ctk
 
 from ui import App
 
 
 def main():
-    root = tk.Tk()
+    root = ctk.CTk()
     App(root)
     root.mainloop()
 
