@@ -49,7 +49,7 @@ func main() {
 // 1. OBTENER LISTA (Límite 10 para rendimiento)
 func getEmpleados(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	rows, err := db.Query("SELECT emp_no, birth_date, first_name, last_name, gender, hire_date FROM employees LIMIT 10")
+	rows, err := db.Query("SELECT emp_no, birth_date, first_name, last_name, gender, hire_date FROM employees LIMIT 30")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
