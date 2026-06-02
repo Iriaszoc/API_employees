@@ -3,7 +3,7 @@
 #  Rox tiene el servidor — tú te conectas a su IP
 # ============================================================
 
-$IP_ROX = "192.168.X.X"   # <-- SUSTITUIR con la IP real de Rox
+$IP_ROX = "192.168.219.185"   # IP de Rox
 
 $env:API_URL = "http://${IP_ROX}:8080"
 Write-Host ""
@@ -23,4 +23,5 @@ try {
     Read-Host "Presiona Enter para intentar abrir la app de todos modos..."
 }
 
-python ..\cliente_python\main.py
+$mainPy = Join-Path $PSScriptRoot "..\cliente_python\main.py"
+python $mainPy
