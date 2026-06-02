@@ -1,0 +1,148 @@
+""22name: CI — API Empleados
+
+# Se ejecuta automaticamente en cada push y pull request
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  # ─────────────────────────────────────────────
+  # JOB 1: Compilar el codigo Go
+  # ─────────────────────────────────────────────
+  build-go:
+    name: Compilar API Go
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Go 1.24
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Descargar dependencias
+        run: go mod download
+
+      - name: Actualizar go.mod y go.sum
+        run: go mod tidy
+
+      - name: Compilar binario
+        run: go build -v -o api-empleados .
+
+      - name: Confirmar que el binario existe
+        run: ls -lh api-empleados
+
+  # ─────────────────────────────────────────────
+  # JOB 2: Construir imagen Docker
+  # ─────────────────────────────────────────────
+  build-docker:
+    name: Construir imagen Docker
+    runs-on: ubuntu-latest
+    needs: build-go   # Solo corre si el Job 1 paso
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Construir imagen Docker
+        run: docker build -t api-empleados:test .
+
+      - name: Verificar que la imagen existe
+        run: docker images api-empleados:test
+
+  # ─────────────────────────────────────────────
+  # JOB 3: Prueba de integracion completa
+  # Levanta MySQL + API y prueba los 5 endpoints
+  # ─────────────────────────────────────────────
+  integration-test:
+    name: Prueba de integracion (5 endpoints)
+    runs-on: ubuntu-latest
+    needs: build-docker   # Solo corre si el Job 2 paso
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Levantar MySQL y API con Docker Compose
+        run: docker compose up -d --build
+
+      - name: Esperar a que MySQL este saludable
+        run: |
+          echo "Esperando al healthcheck de MySQL..."
+          for i in $(seq 1 30); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' api_employees-db-1 2>/dev/null || echo "starting")
+            echo "Intento $i/30 — Estado MySQL: $STATUS"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "MySQL listo!"
+              break
+            fi
+            sleep 10
+          done
+
+      - name: Esperar a que la API responda
+        run: |
+          echo "Esperando a que la API este en linea..."
+          for i in $(seq 1 20); do
+            if curl -sf http://localhost:8080/empleados > /dev/null; then
+              echo "API respondiendo correctamente!"
+              break
+            fi
+            echo "Intento $i/20 — API aun no responde, esperando..."
+            sleep 5
+          done
+
+      - name: "TEST 1: GET /empleados — Listar empleados"
+        run: |
+          RESPONSE=$(curl -sf http://localhost:8080/empleados)
+          echo "Respuesta: $RESPONSE" | head -c 300
+          echo "$RESPONSE" | python3 -c "import json,sys; data=json.load(sys.stdin); assert len(data) > 0, 'Lista vacia!'; print(f'OK — {len(data)} empleados recibidos')"
+
+      - name: "TEST 2: GET /empleados/10001 — Buscar empleado existente"
+        run: |
+          RESPONSE=$(curl -sf http://localhost:8080/empleados/10001)
+          echo "Respuesta: $RESPONSE"
+          echo "$RESPONSE" | python3 -c "import json,sys; e=json.load(sys.stdin); assert e['emp_no']==10001; assert e['first_name']=='Georgi'; print('OK — Empleado 10001 encontrado correctamente')"
+
+      - name: "TEST 3: POST /empleados — Crear nuevo empleado"
+        run: |
+          RESPONSE=$(curl -sf -X POST http://localhost:8080/empleados \
+            -H "Content-Type: application/json" \
+            -d '{"emp_no":999998,"birth_date":"1995-06-15","first_name":"CI","last_name":"Test","gender":"M","hire_date":"2024-01-01"}')
+          echo "Respuesta: $RESPONSE"
+          echo "$RESPONSE" | python3 -c "import json,sys; e=json.load(sys.stdin); assert e['emp_no']==999998; print('OK — Empleado creado correctamente')"
+
+      - name: "TEST 4: PUT /empleados/999998 — Actualizar empleado"
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X PUT http://localhost:8080/empleados/999998 \
+            -H "Content-Type: application/json" \
+            -d '{"first_name":"CI-Updated","last_name":"Test","gender":"F"}')
+          echo "HTTP Status: $STATUS"
+          [ "$STATUS" = "200" ] && echo "OK — Empleado actualizado" || (echo "FALLO — HTTP $STATUS" && exit 1)
+
+      - name: "TEST 5: DELETE /empleados/999998 — Eliminar empleado"
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE http://localhost:8080/empleados/999998)
+          echo "HTTP Status: $STATUS"
+          [ "$STATUS" = "204" ] && echo "OK — Empleado eliminado" || (echo "FALLO — HTTP $STATUS" && exit 1)
+
+      - name: Verificar que el empleado fue eliminado (GET debe dar 404)
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/empleados/999998)
+          echo "HTTP Status: $STATUS"
+          [ "$STATUS" = "404" ] && echo "OK — Empleado ya no existe (404 correcto)" || (echo "FALLO — se esperaba 404, se obtuvo $STATUS" && exit 1)
+
+      - name: Ver logs de contenedores si algo fallo
+        if: failure()
+        run: |
+          echo "=== LOGS API ==="
+          docker logs api_employees-api-1
+          echo "=== LOGS DB ==="
+          docker logs api_employees-db-1 --tail 30
+
+      - name: Apagar contenedores
+        if: always()
+        run: docker compose down -v
