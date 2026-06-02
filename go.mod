@@ -1,6 +1,6 @@
 module api-employees
 
-go 1.26.3
+go 1.24
 
 require (
 	github.com/go-sql-driver/mysql v1.10.0
