@@ -1,19 +1,18 @@
-# Documentos actualizados 
+# Documentos del Proyecto
 
-Documentacion alineada al avance actual del repositorio.
+Esta carpeta contiene la documentación técnica y el seguimiento del desarrollo del proyecto final.
 
-## Alcance de esta carpeta
-- Backend en Go.
-- Despliegue con Docker y Docker Compose.
-- Base de datos MySQL.
-- API CRUD para empleados con endpoints ya definidos en el avance.
+## Alcance Actual del Sistema
+- **Backend en Go**: Completo con 5 endpoints CRUD y respuestas JSON homogéneas.
+- **Base de datos MySQL**: Integrada con dataset original (300k+ registros) y healthchecks activados.
+- **Despliegue con Docker**: Totalmente automatizado usando Docker Compose.
+- **Cliente Python**: Interfaz gráfica moderna con `customtkinter`.
+- **Conectividad Local**: Scripts configurados para red de área local entre múltiples equipos.
+- **CI/CD**: GitHub Actions validando los 5 endpoints del API con cada push.
 
 ## Archivos incluidos
-- estado_actual.md
-- contrato_api.md
-- guia_ejecucion_docker.md
-- faltantes_y_reparto_equipo.md
-- checklist_revision.md
+- `DOCUMENTACION_PROYECTO_FINAL_CRUD_EMPLEADOS.md`: Documento consolidado del funcionamiento general.
+- `checklist_revision.md`: Lista de tareas y progreso del equipo.
+- `faltantes_y_reparto_equipo.md`: Planeación original (Completada).
 
-## Nota
-Estos documentos reflejan el estado real del avance clonado. Si el equipo cambia el esquema o el contrato, esta carpeta debe actualizarse y la version anterior debe quedar solo como referencia historica.
+> **Nota:** Todos los objetivos técnicos han sido completados exitosamente.
