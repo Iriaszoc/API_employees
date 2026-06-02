@@ -1,4 +1,4 @@
-""22name: CI — API Empleados
+name: CI - API Empleados
 
 # Se ejecuta automaticamente en cada push y pull request
 on:
