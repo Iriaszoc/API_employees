@@ -77,7 +77,17 @@ class EmployeeForm(ctk.CTkToplevel):
         self.geometry(f"+{max(x, 0)}+{max(y, 0)}")
 
     def _save(self):
+        # 1. Recopilamos todos los campos limpios como strings
         payload = {key: entry.get().strip() for key, entry in self.entries.items()}
+        
+        # 2. Convertimos el emp_no a un entero real si contiene números
+        if "emp_no" in payload and payload["emp_no"].isdigit():
+            payload["emp_no"] = int(payload["emp_no"])
+        else:
+            # Si el usuario lo dejó vacío o puso letras, lo mandamos como 0 
+            # para que el backend maneje el error de validación correctamente
+            payload["emp_no"] = 0
+
         if self.on_save:
             self.on_save(payload)
 
