@@ -1,0 +1,38 @@
+name: Pruebas Automatizadas de la API
+
+# El flujo se activará cada vez que se haga un push a la rama main
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Descargar el código del repositorio a la máquina virtual de GitHub
+    - name: Checkout del código
+      uses: actions/checkout@v4
+
+    # 2. Levantar el entorno (API en Go y MySQL) usando tu docker-compose
+    - name: Levantar contenedores con Docker Compose
+      run: |
+        docker-compose up --build -d
+
+    # 3. Esperar a que MySQL esté completamente listo para recibir conexiones
+    #    (Le damos unos segundos para que no truene por falta de conexión)
+    - name: Esperar a que la base de datos despierte
+      run: sleep 15
+
+    # 4. Dar permisos y ejecutar el script de pruebas que hizo Pablo
+    - name: Ejecutar pruebas de la API (test_api.sh)
+      run: |
+        chmod +x "./parte Pablo Reyes/tests/test_api.sh"
+        cd "./parte Pablo Reyes/tests"
+        ./test_api.sh
+
+    # 5. Apagar todo al terminar
+    - name: Apagar contenedores
+      run: docker-compose down -v
