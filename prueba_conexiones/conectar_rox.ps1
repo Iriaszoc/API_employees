@@ -21,4 +21,5 @@ try {
     Read-Host "Presiona Enter para continuar..."
 }
 
-python ..\cliente_python\main.py
+$mainPy = Join-Path $PSScriptRoot "..\cliente_python\main.py"
+python $mainPy

@@ -1,4 +1,4 @@
-FROM golang:1.26-alpine
+FROM golang:1.24-alpine
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN go mod download
 COPY . .
 
 # Compilamos
-RUN go build -o main .
+RUN go mod tidy && go build -o main .
 
 EXPOSE 8080
 
