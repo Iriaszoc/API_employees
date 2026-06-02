@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import requests
 
-BASE_URL = os.getenv("API_URL", "http://localhost:8080").rstrip("/")
+BASE_URL = os.getenv("API_URL", "http://192.168.219.185:8080").rstrip("/")
 TIMEOUT = float(os.getenv("API_TIMEOUT", "8"))
 
 
